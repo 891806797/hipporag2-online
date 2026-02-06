@@ -47,3 +47,17 @@ if __name__ == '__main__':
         print(f"why: {whys[i]}")
         print(f"tokens: {tokens[i]}")
         print("================================")
+
+    hipporag.delete(docs_to_delete=["王林从小聪明，是村子里公认的神童。"])
+    print("=== after deletion ===")
+    res = hipporag.rag_qa(queries=queries)
+    print("=== answers ===")
+    answers = res[0]
+    whys = res[1]
+    tokens = res[2]
+    for i in range(len(queries)):
+        print(f"query: {queries[i]}")
+        print(f"answer: {answers[i].answer}")
+        print(f"why: {whys[i]}")
+        print(f"tokens: {tokens[i]}")
+        print("================================")

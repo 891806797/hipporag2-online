@@ -1,422 +1,404 @@
-<h1 align="center">HippoRAG 2: From RAG to Memory</h1>
+# HippoRAG 2: 从RAG到记忆
+
 <p align="center">
     <img src="https://github.com/OSU-NLP-Group/HippoRAG/raw/main/images/hippo_brain.png" width="55%" style="max-width: 300px;">
 </p>
 
-[<img align="center" src="https://colab.research.google.com/assets/colab-badge.svg" />](https://colab.research.google.com/drive/1nuelysWsXL8F5xH6q4JYJI8mvtlmeM9O#scrollTo=TjHdNe2KC81K)
+[![arXiv](https://img.shields.io/badge/arXiv-2502.14802%20HippoRAG%202-b31b1b)](https://arxiv.org/abs/2502.14802)
+[![arXiv](https://img.shields.io/badge/arXiv-2405.14831%20HippoRAG%201-b31b1b)](https://arxiv.org/abs/2405.14831)
+[![GitHub](https://img.shields.io/badge/GitHub-HippoRAG%201-blue)](https://github.com/OSU-NLP-Group/HippoRAG/tree/legacy)
 
-[<img align="center" src="https://img.shields.io/badge/arXiv-2502.14802 HippoRAG 2-b31b1b" />](https://arxiv.org/abs/2502.14802)
-[<img align="center" src="https://img.shields.io/badge/🤗 Dataset-HippoRAG 2-yellow" />](https://huggingface.co/datasets/osunlp/HippoRAG_2/tree/main)
-[<img align="center" src="https://img.shields.io/badge/arXiv-2405.14831 HippoRAG 1-b31b1b" />](https://arxiv.org/abs/2405.14831)
-[<img align="center" src="https://img.shields.io/badge/GitHub-HippoRAG 1-blue" />](https://github.com/OSU-NLP-Group/HippoRAG/tree/legacy)
+## 简介
 
-### HippoRAG 2 is a powerful memory framework for LLMs that enhances their ability to recognize and utilize connections in new knowledge—mirroring a key function of human long-term memory.
+HippoRAG 2是一个为大型语言模型（LLM）设计的强大记忆框架，它增强了LLM识别和利用新知识中连接的能力——这反映了人类长期记忆的一个关键功能。
 
-Our experiments show that HippoRAG 2 improves associativity (multi-hop retrieval) and sense-making (the process of integrating large and complex contexts) in even the most advanced RAG systems, without sacrificing their performance on simpler tasks.
+我们的实验表明，HippoRAG 2在提高关联性（多跳检索）和意义构建（整合大型和复杂上下文的过程）方面，即使在最先进的RAG系统中，也不会牺牲其在简单任务上的性能。
 
-Like its predecessor, HippoRAG 2 remains cost and latency efficient in online processes, while using significantly fewer resources for offline indexing compared to other graph-based solutions such as GraphRAG, RAPTOR, and LightRAG.
+与其前身一样，HippoRAG 2在在线过程中保持成本和延迟效率，同时与GraphRAG、RAPTOR和LightRAG等其他基于图的解决方案相比，离线索引使用的资源显著减少。
 
 <p align="center">
   <img align="center" src="https://github.com/OSU-NLP-Group/HippoRAG/raw/main/images/intro.png" />
 </p>
 <p align="center">
-  <b>Figure 1:</b> Evaluation of continual learning capabilities across three key dimensions: factual memory (NaturalQuestions, PopQA), sense-making (NarrativeQA), and associativity (MuSiQue, 2Wiki, HotpotQA, and LV-Eval). HippoRAG 2 surpasses other methods across all
-categories, bringing it one step closer to true long-term memory.
+  <b>图1：</b>在三个关键维度上评估持续学习能力：事实记忆（NaturalQuestions、PopQA）、意义构建（NarrativeQA）和关联性（MuSiQue、2Wiki、HotpotQA和LV-Eval）。HippoRAG 2在所有类别中都超越了其他方法，使其更接近真正的长期记忆。
 </p>
 
 <p align="center">
   <img align="center" src="https://github.com/OSU-NLP-Group/HippoRAG/raw/main/images/methodology.png" />
 </p>
 <p align="center">
-  <b>Figure 2:</b> HippoRAG 2 methodology.
+  <b>图2：</b>HippoRAG 2方法。
 </p>
 
-#### Check out our papers to learn more:
+## 本项目特点
 
-* [**HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models**](https://arxiv.org/abs/2405.14831) [NeurIPS '24].
-* [**From RAG to Memory: Non-Parametric Continual Learning for Large Language Models**](https://arxiv.org/abs/2502.14802) [ICML '25].
+本项目是对原HippoRAG 2的简化版本，主要特点包括：
 
-----
+- **仅支持在线模式**：简化了原项目，只保留了在线推理模式
+- **OpenAI模型支持**：移除了OpenAI以外的LLM相关代码，专注于OpenAI API的使用
+- **中文提示词**：将所有提示词翻译为中文，方便中文用户使用
+- **核心算法保持一致**：与原HippoRAG 2保持相同的检索和问答算法
 
-## Installation
+## 安装
 
 ```sh
 conda create -n hipporag python=3.10
 conda activate hipporag
-pip install hipporag
+pip install -r requirements.txt
 ```
-Initialize the environmental variables and activate the environment:
+
+初始化环境变量并激活环境：
 
 ```sh
 export CUDA_VISIBLE_DEVICES=0,1,2,3
-export HF_HOME=<path to Huggingface home directory>
-export OPENAI_API_KEY=<your openai api key>   # if you want to use OpenAI model
+export HF_HOME=<Huggingface home目录路径>
 
 conda activate hipporag
 ```
 
-## Quick Start
+**注意**：API密钥不再需要通过环境变量配置，而是直接在BaseConfig中设置。
 
-### OpenAI Models
+## 快速开始
 
-This simple example will illustrate how to use `hipporag` with any OpenAI model:
+### 基本使用示例
+
+以下示例展示了如何使用HippoRAG进行文档索引、检索和问答：
 
 ```python
 from hipporag import HippoRAG
+from hipporag.utils.config_utils import BaseConfig
 
-# Prepare datasets and evaluation
+# 配置参数
+config = BaseConfig(
+    llm_name="qwen3-max",  # LLM模型名称
+    llm_base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",  # LLM API地址
+    llm_api_key="your-api-key",  # LLM API密钥
+    max_new_tokens=4096,  # 最大生成token数
+    temperature=0.0,  # 温度参数
+    embedding_model_name="text-embedding-v4",  # 嵌入模型名称
+    embedding_base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",  # 嵌入API地址
+    embedding_api_key="your-api-key",  # 嵌入API密钥
+    graph_type="facts_and_sim_passage_node_unidirectional",  # 图类型
+    save_dir="outputs",  # 保存目录
+    save_openie=True  # 是否保存OpenIE结果
+)
+
+# 定义保存目录
+save_dir = "outputs"
+
+# 初始化HippoRAG实例
+hipporag = HippoRAG(save_dir=save_dir, global_config=config)
+
+# 准备文档
 docs = [
-    "Oliver Badman is a politician.",
-    "George Rankin is a politician.",
-    "Thomas Marwick is a politician.",
-    "Cinderella attended the royal ball.",
-    "The prince used the lost glass slipper to search the kingdom.",
-    "When the slipper fit perfectly, Cinderella was reunited with the prince.",
-    "Erik Hort's birthplace is Montebello.",
-    "Marina is bom in Minsk.",
-    "Montebello is a part of Rockland County."
+    "王林从小聪明，是村子里公认的神童。",
+    "铁柱是王林的小名，他身体瘦弱。",
+    "恒岳派收下了王林作为弟子，从此开始修行之路。",
 ]
 
-save_dir = 'outputs'# Define save directory for HippoRAG objects (each LLM/Embedding model combination will create a new subdirectory)
-llm_model_name = 'gpt-4o-mini' # Any OpenAI model name
-embedding_model_name = 'nvidia/NV-Embed-v2'# Embedding model name (NV-Embed, GritLM or Contriever for now)
-
-#Startup a HippoRAG instance
-hipporag = HippoRAG(save_dir=save_dir, 
-                    llm_model_name=llm_model_name,
-                    embedding_model_name=embedding_model_name) 
-
-#Run indexing
+# 索引文档
 hipporag.index(docs=docs)
 
-#Separate Retrieval & QA
+# 准备查询
 queries = [
-    "What is George Rankin's occupation?",
-    "How did Cinderella reach her happy ending?",
-    "What county is Erik Hort's birthplace a part of?"
+    "谁是王林？他的主要人际关系是什么样？",
+    "王林和铁柱的关系是什么？",
 ]
 
-retrieval_results = hipporag.retrieve(queries=queries, num_to_retrieve=2)
-qa_results = hipporag.rag_qa(retrieval_results)
+# 执行问答
+query_solutions, responses, metadata = hipporag.rag_qa(queries=queries)
 
-#Combined Retrieval & QA
-rag_results = hipporag.rag_qa(queries=queries)
+# 打印结果
+print("=== 问答结果 ===")
+for i in range(len(queries)):
+    print(f"问题: {queries[i]}")
+    print(f"答案: {query_solutions[i].answer}")
+    print(f"响应: {responses[i]}")
+    print(f"元数据: {metadata[i]}")
+    print("=" * 50)
+```
 
-#For Evaluation
-answers = [
-    ["Politician"],
-    ["By going to the ball."],
-    ["Rockland County"]
+### 使用OpenAI模型
+
+如果你想使用OpenAI官方模型，可以这样配置：
+
+```python
+from hipporag import HippoRAG
+from hipporag.utils.config_utils import BaseConfig
+
+# 配置OpenAI参数
+config = BaseConfig(
+    llm_name="gpt-4o-mini",  # OpenAI模型名称
+    llm_base_url="https://api.openai.com/v1",  # OpenAI API地址
+    llm_api_key="your-openai-api-key",  # OpenAI API密钥
+    embedding_model_name="text-embedding-3-small",  # OpenAI嵌入模型
+    embedding_base_url="https://api.openai.com/v1",  # OpenAI嵌入API地址
+    embedding_api_key="your-openai-api-key",  # OpenAI API密钥
+    save_dir="outputs",
+    save_openie=True
+)
+
+# 初始化HippoRAG
+hipporag = HippoRAG(save_dir="outputs", global_config=config)
+
+# 准备文档
+docs = [
+    "Oliver Badman是一名政治家。",
+    "George Rankin是一名政治家。",
+    "Cinderella参加了皇家舞会。",
+    "王子用丢失的水晶鞋搜寻王国。",
+]
+
+# 索引和问答
+hipporag.index(docs=docs)
+query_solutions, responses, metadata = hipporag.rag_qa(
+    queries=["George Rankin的职业是什么？"]
+)
+print(f"答案: {query_solutions[0].answer}")
+```
+
+### 文档删除
+
+HippoRAG支持删除已索引的文档：
+
+```python
+# 删除指定文档
+hipporag.delete(docs_to_delete=["王林从小聪明，是村子里公认的神童。"])
+
+# 重新执行问答，结果会基于删除后的文档
+query_solutions, responses, metadata = hipporag.rag_qa(queries=queries)
+```
+
+### 带评估的问答
+
+如果需要评估检索和问答性能，可以提供标准答案和标准文档：
+
+```python
+# 准备标准答案和标准文档
+gold_answers = [
+    ["王林是村子里公认的神童"],
+    ["铁柱是王林的小名"]
 ]
 
 gold_docs = [
-    ["George Rankin is a politician."],
-    ["Cinderella attended the royal ball.",
-    "The prince used the lost glass slipper to search the kingdom.",
-    "When the slipper fit perfectly, Cinderella was reunited with the prince."],
-    ["Erik Hort's birthplace is Montebello.",
-    "Montebello is a part of Rockland County."]
+    ["王林从小聪明，是村子里公认的神童。"],
+    ["铁柱是王林的小名，他身体瘦弱。"]
 ]
 
-rag_results = hipporag.rag_qa(queries=queries, 
-                              gold_docs=gold_docs,
-                              gold_answers=answers)
+# 执行带评估的问答
+query_solutions, responses, metadata, retrieval_result, qa_result = hipporag.rag_qa(
+    queries=queries,
+    gold_docs=gold_docs,
+    gold_answers=gold_answers
+)
+
+# 打印评估结果
+print(f"检索评估结果: {retrieval_result}")
+print(f"问答评估结果: {qa_result}")
 ```
 
-#### Example (OpenAI Compatible Embeddings)
+## 测试
 
-If you want to use LLMs and Embeddings Compatible to OpenAI, please use the following methods.</p>
-    
-```python
-hipporag = HippoRAG(save_dir=save_dir, 
-    llm_model_name='Your LLM Model name',
-    llm_base_url='Your LLM Model url',
-    embedding_model_name='Your Embedding model name',  
-    embedding_base_url='Your Embedding model url')
-```
+在为HippoRAG做出贡献时，请运行以下脚本以确保你的更改不会导致核心模块的意外行为。
 
-### Local Deployment (vLLM)
+这些脚本测试索引、图加载、文档删除和HippoRAG对象的增量更新。
 
-This simple example will illustrate how to use `hipporag` with any vLLM-compatible locally deployed LLM.
+### 运行测试
 
-1. Run a local [OpenAI-compatible vLLM server](https://docs.vllm.ai/en/latest/getting_started/quickstart.html#quickstart-online) with specified GPUs (make sure you leave enough memory for your embedding model).
+要测试HippoRAG，请先在测试脚本中配置好API密钥，然后运行：
 
 ```sh
-export CUDA_VISIBLE_DEVICES=0,1
-export VLLM_WORKER_MULTIPROC_METHOD=spawn
-export HF_HOME=<path to Huggingface home directory>
-
-conda activate hipporag  # vllm should be in this environment
-
-# Tune gpu-memory-utilization or max_model_len to fit your GPU memory, if OOM occurs
-vllm serve meta-llama/Llama-3.3-70B-Instruct --tensor-parallel-size 2 --max_model_len 4096 --gpu-memory-utilization 0.95 
-```
-
-2. Now you can use very similar code to the one above to use `hipporag`: 
-
-```python
-save_dir = 'outputs'# Define save directory for HippoRAG objects (each LLM/Embedding model combination will create a new subdirectory)
-llm_model_name = # Any OpenAI model name
-embedding_model_name = # Embedding model name (NV-Embed, GritLM or Contriever for now)
-llm_base_url= # Base url for your deployed LLM (i.e. http://localhost:8000/v1)
-
-hipporag = HippoRAG(save_dir=save_dir,
-                    llm_model_name=llm_model,
-                    embedding_model_name=embedding_model_name,
-                    llm_base_url=llm_base_url)
-
-# Same Indexing, Retrieval and QA as running OpenAI models above
-```
-
-## Testing
-
-When making a contribution to HippoRAG, please run the scripts below to ensure that your changes do not result in unexpected behavior from our core modules. 
-
-These scripts test for indexing, graph loading, document deletion and incremental updates to a HippoRAG object.
-
-### OpenAI Test
-
-To test HippoRAG with an OpenAI LLM and embedding model, simply run the following. 
-The cost of this test will be negligible.
-
-```sh
-export OPENAI_API_KEY=<your openai api key> 
-
 conda activate hipporag
 
-python tests_openai.py
+python hipporag_test.py
 ```
 
-### Local Test
+**注意**：API密钥需要在测试脚本中的BaseConfig里配置，而不是通过环境变量设置。
 
-To test locally, you must deploy a vLLM instance. We choose to deploy a smaller 8B model `Llama-3.1-8B-Instruct` for cheaper testing.
-
-```sh
-export CUDA_VISIBLE_DEVICES=0
-export VLLM_WORKER_MULTIPROC_METHOD=spawn
-export HF_HOME=<path to Huggingface home directory>
-
-conda activate hipporag  # vllm should be in this environment
-
-# Tune gpu-memory-utilization or max_model_len to fit your GPU memory, if OOM occurs
-vllm serve meta-llama/Llama-3.1-8B-Instruct --tensor-parallel-size 2 --max_model_len 4096 --gpu-memory-utilization 0.95 --port 6578
-```
-
-Then, we run the following test script:
-
-```sh
-CUDA_VISIBLE=1 python tests_local.py
-```
-
-## Reproducing our Experiments
-
-To use our code to run experiments we recommend you clone this repository and follow the structure of the `main.py` script.
-
-### Data for Reproducibility
-
-We evaluated several sampled datasets in our paper, some of which are already included in the `reproduce/dataset` directory of this repo. For the complete set of datasets, please visit
-our [HuggingFace dataset](https://huggingface.co/datasets/osunlp/HippoRAG_v2) and place them under `reproduce/dataset`. We also provide the OpenIE results for both `gpt-4o-mini` and `Llama-3.3-70B-Instruct` for our `musique` sample under `outputs/musique`.
-
-To test your environment is properly set up, you can use the small dataset `reproduce/dataset/sample.json` for debugging as shown below.
-
-### Running Indexing & QA
-
-Initialize the environmental variables and activate the environment:
-
-```sh
-export CUDA_VISIBLE_DEVICES=0,1,2,3
-export HF_HOME=<path to Huggingface home directory>
-export OPENAI_API_KEY=<your openai api key>   # if you want to use OpenAI model
-
-conda activate hipporag
-```
-
-### Run with OpenAI Model
-
-```sh
-dataset=sample  # or any other dataset under `reproduce/dataset`
-
-# Run OpenAI model
-python main.py --dataset $dataset --llm_base_url https://api.openai.com/v1 --llm_name gpt-4o-mini --embedding_name nvidia/NV-Embed-v2
-```
-
-### Run with vLLM (Llama)
-
-1. As above, run a local [OpenAI-compatible vLLM server](https://docs.vllm.ai/en/latest/getting_started/quickstart.html#quickstart-online) with specified GPU.
-
-```sh
-export CUDA_VISIBLE_DEVICES=0,1
-export VLLM_WORKER_MULTIPROC_METHOD=spawn
-export HF_HOME=<path to Huggingface home directory>
-
-conda activate hipporag  # vllm should be in this environment
-
-# Tune gpu-memory-utilization or max_model_len to fit your GPU memory, if OOM occurs
-vllm serve meta-llama/Llama-3.3-70B-Instruct --tensor-parallel-size 2 --max_model_len 4096 --gpu-memory-utilization 0.95 
-```
-
-2. Use another GPUs to run the main program in another terminal.
-
-```sh
-export CUDA_VISIBLE_DEVICES=2,3  # set another GPUs while vLLM server is running
-export HF_HOME=<path to Huggingface home directory>
-dataset=sample
-
-python main.py --dataset $dataset --llm_base_url http://localhost:8000/v1 --llm_name meta-llama/Llama-3.3-70B-Instruct --embedding_name nvidia/NV-Embed-v2
-```
-
-#### Advanced: Run with vLLM offline batch
-
-vLLM offers an [offline batch mode](https://docs.vllm.ai/en/latest/getting_started/quickstart.html#offline-batched-inference) for faster inference, which could bring us more than 3x faster indexing compared to vLLM online server. 
-
-1. Use the following command to run the main program with vLLM offline batch mode.
-
-```sh
-export CUDA_VISIBLE_DEVICES=0,1,2,3 # use all GPUs for faster offline indexing
-export VLLM_WORKER_MULTIPROC_METHOD=spawn
-export HF_HOME=<path to Huggingface home directory>
-export OPENAI_API_KEY=''
-dataset=sample
-
-python main.py --dataset $dataset --llm_name meta-llama/Llama-3.3-70B-Instruct --openie_mode offline --skip_graph
-```
-
-2. After the first step, OpenIE result is saved to file. Go back to run vLLM online server and main program as described in the `Run with vLLM (Llama)` main section.
-
-## Debugging Note
-
-- `/reproduce/dataset/sample.json` is a small dataset specifically for debugging.
-- When debugging vLLM offline mode, set `tensor_parallel_size` as `1` in `hipporag/llm/vllm_offline.py`.
-- If you want to rerun a particular experiment, remember to clear the saved files, including OpenIE results and knowledge graph, e.g.,
-
-```sh
-rm reproduce/dataset/openie_results/openie_sample_results_ner_meta-llama_Llama-3.3-70B-Instruct_3.json
-rm -rf outputs/sample/sample_meta-llama_Llama-3.3-70B-Instruct_nvidia_NV-Embed-v2
-```
-### Custom Datasets
-
-To setup your own custom dataset for evaluation, follow the format and naming convention shown in `reproduce/dataset/sample_corpus.json` (your dataset's name should be followed by `_corpus.json`). If running an experiment with pre-defined questions, organize your query corpus according to the query file `reproduce/dataset/sample.json`, be sure to also follow our naming convention.
-
-The corpus and optional query JSON files should have the following format:
-
-#### Retrieval Corpus JSON
-
-```json
-[
-  {
-    "title": "FIRST PASSAGE TITLE",
-    "text": "FIRST PASSAGE TEXT",
-    "idx": 0
-  },
-  {
-    "title": "SECOND PASSAGE TITLE",
-    "text": "SECOND PASSAGE TEXT",
-    "idx": 1
-  }
-]
-```
-
-#### (Optional) Query JSON
-
-```json
-
-[
-  {
-    "id": "sample/question_1.json",
-    "question": "QUESTION",
-    "answer": [
-      "ANSWER"
-    ],
-    "answerable": true,
-    "paragraphs": [
-      {
-        "title": "{FIRST SUPPORTING PASSAGE TITLE}",
-        "text": "{FIRST SUPPORTING PASSAGE TEXT}",
-        "is_supporting": true,
-        "idx": 0
-      },
-      {
-        "title": "{SECOND SUPPORTING PASSAGE TITLE}",
-        "text": "{SECOND SUPPORTING PASSAGE TEXT}",
-        "is_supporting": true,
-        "idx": 1
-      }
-    ]
-  }
-]
-```
-
-#### (Optional) Chunking Corpus
-
-When preparing your data, you may need to chunk each passage, as longer passage may be too complex for the OpenIE process.
-
-## Code Structure
+## 项目结构
 
 ```
-📦 .
-│-- 📂 src/hipporag
-│   ├── 📂 embedding_model          # Implementation of all embedding models
-│   │   ├── __init__.py             # Getter function for get specific embedding model classes
-|   |   ├── base.py                 # Base embedding model class `BaseEmbeddingModel` to inherit and `EmbeddingConfig`
-|   |   ├── NVEmbedV2.py            # Implementation of NV-Embed-v2 model
-|   |   ├── ...
-│   ├── 📂 evaluation               # Implementation of all evaluation metrics
+📦 hipporag2-online
+│-- 📂 hipporag
+│   ├── 📂 embedding_model          # 所有嵌入模型的实现
 │   │   ├── __init__.py
-|   |   ├── base.py                 # Base evaluation metric class `BaseMetric` to inherit
-│   │   ├── qa_eval.py              # Eval metrics for QA
-│   │   ├── retrieval_eval.py       # Eval metrics for retrieval
-│   ├── 📂 information_extraction  # Implementation of all information extraction models
+│   │   ├── base.py                 # 基础嵌入模型类
+│   │   └── OpenAI.py              # OpenAI嵌入模型实现
+│   ├── 📂 evaluation               # 所有评估指标的实现
 │   │   ├── __init__.py
-|   |   ├── openie_openai_gpt.py    # Model for OpenIE with OpenAI GPT
-|   |   ├── openie_vllm_offline.py  # Model for OpenIE with LLMs deployed offline with vLLM
-│   ├── 📂 llm                      # Classes for inference with large language models
-│   │   ├── __init__.py             # Getter function
-|   |   ├── base.py                 # Config class for LLM inference and base LLM inference class to inherit
-|   |   ├── openai_gpt.py           # Class for inference with OpenAI GPT
-|   |   ├── vllm_llama.py           # Class for inference using a local vLLM server
-|   |   ├── vllm_offline.py         # Class for inference using the vLLM API directly
-│   ├── 📂 prompts                  # Prompt templates and prompt template manager class
-|   │   ├── 📂 dspy_prompts         # Prompts for filtering
-|   │   │   ├── ...
-|   │   ├── 📂 templates            # All prompt templates for template manager to load
-|   │   │   ├── README.md           # Documentations of usage of prompte template manager and prompt template files
-|   │   │   ├── __init__.py
-|   │   │   ├── triple_extraction.py
-|   │   │   ├── ...
+│   │   ├── base.py                 # 基础评估指标类
+│   │   ├── qa_eval.py              # QA评估指标
+│   │   ├── retrieval_eval.py       # 检索评估指标
+│   │   └── README.md              # 评估模块文档
+│   ├── 📂 information_extraction  # 所有信息提取模型的实现
 │   │   ├── __init__.py
-|   |   ├── linking.py              # Instruction for linking
-|   |   ├── prompt_template_manager.py  # Implementation of prompt template manager
-│   ├── 📂 utils                    # All utility functions used across this repo (the file name indicates its relevant usage)
-│   │   ├── config_utils.py         # We use only one config across all modules and its setup is specified here
-|   |   ├── ...
+│   │   └── openie_openai.py       # 使用OpenAI GPT的OpenIE模型
+│   ├── 📂 llm                      # 大语言模型推理的类
+│   │   ├── __init__.py
+│   │   ├── base.py                 # LLM推理的配置类和基础类
+│   │   └── openai_gpt.py          # 使用OpenAI GPT推理的类
+│   ├── 📂 prompts                  # 提示词模板和提示词模板管理器类
+│   │   ├── __init__.py
+│   │   ├── linking.py              # 链接指令
+│   │   ├── prompt_template_manager.py  # 提示词模板管理器实现
+│   │   ├── dspy_prompts/          # 过滤提示词
+│   │   └── templates/             # 提示词模板管理器加载的所有提示词模板
+│   │       ├── __init__.py
+│   │       ├── triple_extraction.py
+│   │       ├── ner.py
+│   │       ├── ner_query.py
+│   │       ├── rag_qa_musique.py
+│   │       ├── ircot_hotpotqa.py
+│   │       ├── ircot_musique.py
+│   │       └── README.md
+│   ├── 📂 utils                    # 本仓库中使用的所有实用函数
+│   │   ├── __init__.py
+│   │   ├── config_utils.py         # 所有模块使用的统一配置
+│   │   ├── embed_utils.py         # 嵌入相关实用函数
+│   │   ├── eval_utils.py          # 评估相关实用函数
+│   │   ├── llm_utils.py           # LLM相关实用函数
+│   │   ├── logging_utils.py       # 日志相关实用函数
+│   │   ├── misc_utils.py          # 其他实用函数
+│   │   ├── qa_utils.py           # QA相关实用函数
+│   │   └── typing.py             # 类型定义
 │   ├── __init__.py
-│   ├── HippoRAG.py          # Highest level class for initiating retrieval, question answering, and evaluations
-│   ├── embedding_store.py   # Storage database to load, manage and save embeddings for passages, entities and facts.
-│   ├── rerank.py            # Reranking and filtering methods
-│-- 📂 examples
-│   ├── ...
-│   ├── ...
-│-- 📜 README.md
-│-- 📜 requirements.txt   # Dependencies list
-│-- 📜 .gitignore         # Files to exclude from Git
-
-
+│   ├── HippoRAG.py              # 用于启动检索、问答和评估的最高层类
+│   ├── embedding_store.py       # 用于加载、管理和保存段落、实体和事实嵌入的存储数据库
+│   └── rerank.py                # 重排序和过滤方法
+│-- 📜 README.md                 # 本文档
+│-- 📜 requirements.txt          # 依赖列表
+│-- 📜 hipporag_test.py         # 测试脚本
 ```
 
-## Contact
+## 核心功能
 
-Questions or issues? File an issue or contact 
-[Bernal Jiménez Gutiérrez](mailto:jimenezgutierrez.1@osu.edu),
-[Yiheng Shu](mailto:shu.251@osu.edu),
-[Yu Su](mailto:su.809@osu.edu),
-The Ohio State University
+### 1. 文档索引
 
-## Citation
+使用 [`HippoRAG.index()`](hipporag/HippoRAG.py:210) 方法对文档进行索引，构建知识图谱：
 
-If you find this work useful, please consider citing our papers:
+```python
+hipporag.index(docs=docs)
+```
+
+索引过程包括：
+- 开放信息提取（OpenIE）
+- 实体和事实嵌入编码
+- 知识图谱构建
+
+### 2. 文档检索
+
+使用 [`HippoRAG.retrieve()`](hipporag/HippoRAG.py:351) 方法检索相关文档：
+
+```python
+retrieval_results = hipporag.retrieve(queries=queries, num_to_retrieve=10)
+```
+
+检索过程包括：
+- 事实检索
+- 识别记忆
+- 密集段落评分
+- 基于个性化PageRank的重排序
+
+### 3. 问答
+
+使用 [`HippoRAG.rag_qa()`](hipporag/HippoRAG.py:439) 方法执行检索增强问答：
+
+```python
+query_solutions, responses, metadata = hipporag.rag_qa(queries=queries)
+```
+
+### 4. 评估
+
+提供标准答案和标准文档时，系统会自动进行评估：
+
+```python
+query_solutions, responses, metadata, retrieval_result, qa_result = hipporag.rag_qa(
+    queries=queries,
+    gold_docs=gold_docs,
+    gold_answers=gold_answers
+)
+```
+
+评估指标包括：
+- **检索评估**：Recall@k（召回率）
+- **问答评估**：Exact Match（精确匹配）和F1 Score
+
+## 配置参数
+
+可以通过 [`BaseConfig`](hipporag/utils/config_utils.py:1) 类配置各种参数：
+
+```python
+from hipporag.utils.config_utils import BaseConfig
+
+config = BaseConfig(
+    llm_name="gpt-4o-mini",  # LLM模型名称
+    llm_base_url="https://api.openai.com/v1",  # LLM API地址
+    llm_api_key="your-api-key",  # LLM API密钥
+    max_new_tokens=4096,  # 最大生成token数
+    temperature=0.0,  # 温度参数
+    embedding_model_name="text-embedding-3-small",  # 嵌入模型名称
+    embedding_base_url="https://api.openai.com/v1",  # 嵌入API地址
+    embedding_api_key="your-api-key",  # 嵌入API密钥
+    graph_type="facts_and_sim_passage_node_unidirectional",  # 图类型
+    save_dir="outputs",  # 保存目录
+    save_openie=True  # 是否保存OpenIE结果
+)
+```
+
+主要配置参数：
+
+**LLM相关：**
+- `llm_name`: LLM模型名称（如：gpt-4o-mini、qwen3-max等）
+- `llm_base_url`: LLM API基础URL
+- `llm_api_key`: LLM API密钥
+- `max_new_tokens`: 最大生成token数，默认4096
+- `temperature`: 温度参数，默认0.0
+
+**嵌入模型相关：**
+- `embedding_model_name`: 嵌入模型名称（如：text-embedding-3-small、nvidia/NV-Embed-v2等）
+- `embedding_base_url`: 嵌入模型API基础URL
+- `embedding_api_key`: 嵌入模型API密钥
+- `embedding_batch_size`: 嵌入批处理大小，默认32
+
+**检索相关：**
+- `retrieval_top_k`: 检索的文档数量，默认10
+- `qa_top_k`: 问答时使用的文档数量，默认5
+- `damping`: PageRank阻尼因子，默认0.5
+- `linking_top_k`: 链接时使用的top-k实体数量，默认10
+- `passage_node_weight`: 段落节点权重，默认0.05
+
+**图相关：**
+- `graph_type`: 图类型，默认"facts_and_sim_passage_node_unidirectional"
+- `is_directed_graph`: 是否为有向图，默认False
+- `synonymy_edge_topk`: 同义词边的top-k值，默认10
+- `synonymy_edge_sim_threshold`: 同义词边相似度阈值，默认0.8
+
+**其他：**
+- `save_dir`: 保存目录
+- `save_openie`: 是否保存OpenIE结果，默认True
+- `openie_mode`: OpenIE模式（仅支持'online'）
+- `force_openie_from_scratch`: 是否强制重新运行OpenIE，默认False
+- `force_index_from_scratch`: 是否强制重新索引，默认False
+
+## 注意事项
+
+1. **在线模式限制**：本版本仅支持在线模式，不支持离线索引模式
+
+2. **API密钥配置**：API密钥需要在BaseConfig中配置，而不是通过环境变量设置
+
+3. **中文支持**：提示词已翻译为中文，但评估指标（如`normalize_answer`）主要针对英文文本设计
+
+4. **GPU使用**：如果使用GPU，请设置`CUDA_VISIBLE_DEVICES`环境变量
+
+5. **保存目录**：每次使用不同的LLM/嵌入模型组合时，会在保存目录下创建新的子目录
+
+## 论文引用
+
+如果你觉得这项工作有用，请考虑引用我们的论文：
 
 ### HippoRAG 2
-```
+
+```bibtex
 @misc{gutiérrez2025ragmemorynonparametriccontinual,
       title={From RAG to Memory: Non-Parametric Continual Learning for Large Language Models}, 
       author={Bernal Jiménez Gutiérrez and Yiheng Shu and Weijian Qi and Sizhe Zhou and Yu Su},
@@ -430,19 +412,28 @@ If you find this work useful, please consider citing our papers:
 
 ### HippoRAG
 
-```
+```bibtex
 @inproceedings{gutiérrez2024hipporag,
       title={HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models}, 
       author={Bernal Jiménez Gutiérrez and Yiheng Shu and Yu Gu and Michihiro Yasunaga and Yu Su},
       booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
       year={2024},
       url={https://openreview.net/forum?id=hkujvAPVsg}
- ```
+}
+```
 
-## TODO:
+## 联系方式
 
-- [x] Add support for more embedding models
-- [x] Add support for embedding endpoints
-- [ ] Add support for vector database integration
+有问题或建议？请提交issue或联系：
+[Bernal Jiménez Gutiérrez](mailto:jimenezgutierrez.1@osu.edu),
+[Yiheng Shu](mailto:shu.251@osu.edu),
+[Yu Su](mailto:su.809@osu.edu),
+俄亥俄州立大学
 
-Please feel free to open an issue or PR if you have any questions or suggestions.
+## 许可证
+
+本项目基于原HippoRAG项目进行修改和简化。请参考原项目的许可证信息。
+
+## 致谢
+
+感谢原HippoRAG项目的作者和贡献者。
