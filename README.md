@@ -5,8 +5,7 @@
 </p>
 
 [![arXiv](https://img.shields.io/badge/arXiv-2502.14802%20HippoRAG%202-b31b1b)](https://arxiv.org/abs/2502.14802)
-[![arXiv](https://img.shields.io/badge/arXiv-2405.14831%20HippoRAG%201-b31b1b)](https://arxiv.org/abs/2405.14831)
-[![GitHub](https://img.shields.io/badge/GitHub-HippoRAG%201-blue)](https://github.com/OSU-NLP-Group/HippoRAG/tree/legacy)
+[![GitHub](https://img.shields.io/badge/GitHub-HippoRAG-blue)](https://github.com/OSU-NLP-Group/HippoRAG)
 
 ## 简介
 
@@ -41,18 +40,38 @@ HippoRAG 2是一个为大型语言模型（LLM）设计的强大记忆框架，�
 
 ## 安装
 
+本项目无法通过pip安装，需要将`hipporag`目录复制到你的项目中使用。
+
+### 1. 准备Python环境
+
 ```sh
 conda create -n hipporag python=3.10
 conda activate hipporag
 pip install -r requirements.txt
 ```
 
-初始化环境变量并激活环境：
+### 2. 集成到你的项目
+
+将`hipporag`目录复制到你的项目根目录下：
+
+```
+your_project/
+├── hipporag/          # 复制此目录
+│   ├── __init__.py
+│   ├── HippoRAG.py
+│   ├── embedding_model/
+│   ├── evaluation/
+│   ├── information_extraction/
+│   ├── llm/
+│   ├── prompts/
+│   └── utils/
+├── your_code.py       # 你的代码
+└── requirements.txt
+```
+
+### 3. 激活环境
 
 ```sh
-export CUDA_VISIBLE_DEVICES=0,1,2,3
-export HF_HOME=<Huggingface home目录路径>
-
 conda activate hipporag
 ```
 
@@ -388,7 +407,7 @@ config = BaseConfig(
 
 3. **中文支持**：提示词已翻译为中文，但评估指标（如`normalize_answer`）主要针对英文文本设计
 
-4. **GPU使用**：如果使用GPU，请设置`CUDA_VISIBLE_DEVICES`环境变量
+4. **框架依赖**：本版本不再依赖GPU、VLLM、Transformers等框架，专注于OpenAI API的使用
 
 5. **保存目录**：每次使用不同的LLM/嵌入模型组合时，会在保存目录下创建新的子目录
 
@@ -400,25 +419,13 @@ config = BaseConfig(
 
 ```bibtex
 @misc{gutiérrez2025ragmemorynonparametriccontinual,
-      title={From RAG to Memory: Non-Parametric Continual Learning for Large Language Models}, 
+      title={From RAG to Memory: Non-Parametric Continual Learning for Large Language Models},
       author={Bernal Jiménez Gutiérrez and Yiheng Shu and Weijian Qi and Sizhe Zhou and Yu Su},
       year={2025},
       eprint={2502.14802},
       archivePrefix={arXiv},
       primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2502.14802}, 
-}
-```
-
-### HippoRAG
-
-```bibtex
-@inproceedings{gutiérrez2024hipporag,
-      title={HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models}, 
-      author={Bernal Jiménez Gutiérrez and Yiheng Shu and Yu Gu and Michihiro Yasunaga and Yu Su},
-      booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
-      year={2024},
-      url={https://openreview.net/forum?id=hkujvAPVsg}
+      url={https://arxiv.org/abs/2502.14802},
 }
 ```
 
